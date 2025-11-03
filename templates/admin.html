@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PSSUAI 관리자</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/admin.css') }}"
+    />
+    <script
+      defer
+      src="{{ url_for('static', filename='js/admin.js') }}"
+    ></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">PSSUAI Admin</div>
+      <form method="POST" action="/logout">
+        <button class="btn subtle" type="submit">🔓</button>
+      </form>
+    </header>
+
+    <main class="container">
+      <nav class="tabs">
+        <button id="tab-access" class="tab active" data-tab="access">
+          세대주 출입기록
+        </button>
+        <button id="tab-qr" class="tab" data-tab="qr">
+          방문자 QR 출입기록
+        </button>
+        <button id="tab-residents" class="tab" data-tab="residents">
+          세대주 목록
+        </button>
+      </nav>
+
+      <!-- 필터 영역 -->
+      <section id="filters-global" class="filters">
+        <input id="kw" type="search" placeholder="이름/전화/동-호 검색" />
+        <input id="dateFrom" type="date" />
+        <span>~</span>
+        <input id="dateTo" type="date" />
+        <button id="btn-refresh" class="btn">🔄</button>
+      </section>
+
+      <!-- 테이블: 세대주 출입 -->
+      <section id="panel-access" class="panel active">
+        <div class="card">
+          <div class="card-head">
+            <h2>세대주 출입기록</h2>
+            <small>source: {{ REMOTE_BASE if REMOTE_BASE else '' }}</small>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="tbl-access">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>디바이스</th>
+                  <th>이미지 폴더</th>
+                  <th>시간</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- 동적 렌더 -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <button data-target="access" class="btn subtle prev">이전</button>
+            <span class="page" data-target="access">1</span>
+            <button data-target="access" class="btn subtle next">다음</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 테이블: 방문자 QR -->
+      <section id="panel-qr" class="panel">
+        <div class="card">
+          <div class="card-head">
+            <h2>방문자 QR 출입기록</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="table" id="tbl-qr">
+              <!-- 기존 thead 교체 -->
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>전화</th>
+                  <th>목적</th>
+                  <th>상태</th>
+                  <th>디바이스</th>
+                  <th>시간</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- 동적 렌더 -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pager">
+            <button data-target="qr" class="btn subtle prev">이전</button>
+            <span class="page" data-target="qr">1</span>
+            <button data-target="qr" class="btn subtle next">다음</button>
+          </div>
+        </div>
+      </section>
+
+      <!--세대주목록-->
+      <section id="panel-residents" class="panel" data-panel="residents">
+        <div class="card">
+          <div class="card-title">세대주 목록</div>
+
+          <div
+            class="toolbar"
+            style="display: flex; gap: 8px; align-items: center"
+          >
+            <input
+              id="residentSearch"
+              type="text"
+              placeholder="이름/전화/동-호 검색"
+              oninput="filterResidents()"
+            />
+            <button class="small" onclick="reloadResidents()">새로고침</button>
+            <span
+              id="residentCount"
+              style="margin-left: auto; opacity: 0.7"
+            ></span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 80px">ID</th>
+                  <th>이름</th>
+                  <th>전화</th>
+                  <th>동-호</th>
+                  <th style="width: 160px">등록일</th>
+                  <th style="width: 120px">작업</th>
+                </tr>
+              </thead>
+              <tbody id="residents-tbody"></tbody>
+            </table>
+            <div id="residentEmpty" style="display: none; padding: 12px">
+              승인된 세대주가 없습니다.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
